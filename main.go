@@ -26,12 +26,13 @@ func main() {
 	db := config.ConnectDatabase()
 
 	// auto migrate
-	db.AutoMigrate(&models.User{}, &models.Profile{}, &models.Post{}, &models.Group{})
+	db.AutoMigrate(&models.User{}, &models.Profile{}, &models.Post{}, &models.Group{}, &models.Message{})
 
 	// inisialisasi controllers
 	authController := controllers.NewAuthController(db)
 	userController := controllers.NewUserController(db)
 	profileController := controllers.NewRelationController(db)
+	chatController := controllers.NewChatController(db)
 
 	api := r.Group("/api")
 	{
@@ -48,6 +49,7 @@ func main() {
 			protected.POST("/profiles", profileController.CreateProfile)
 			protected.POST("/posts", profileController.CreatePost)
 			protected.POST("/groups", profileController.CreateGroups)
+			protected.GET("/ws", chatController.HandleWebSocket)
 			protected.POST("/groups/add", profileController.AddUserToGroup)
 		}
 	}
